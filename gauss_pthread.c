@@ -19,6 +19,8 @@
 #include <assert.h>
 #include <stdio.h>
 
+#define min(a, b) ((a)<(b)?(a):(b))
+
 // global variable
 const int MAX_MATRIX_VALUE = 1000;
 typedef double EleType;
@@ -92,7 +94,7 @@ void barrier()
     pthread_mutex_lock(&barrierMutex);
     arriveCount++;
 
-    while(arriveCount < threadnum)
+    if(arriveCount < threadnum)
     {
         pthread_cond_wait(&barrierCond, &barrierMutex);
     }
@@ -114,7 +116,7 @@ void* gauss_elimination_parallel_middleloop(void* id)
         int tid = *(int*)id;
         int totalRow = dimension - column - 1;
         int from = totalRow*tid/threadnum + column + 1;
-        int to = (int)fmin(totalRow*(tid+1)/threadnum, dimension);
+        int to = (int)min(totalRow*(tid+1)/threadnum, dimension);
         for(int row = from; row < to; row++)
         {
             EleType fac = ppMartix[row][column] / ppMartix[column][column];
@@ -176,12 +178,14 @@ int main(int argc, char* argv[])
 {
     getInput(argc, argv);
 
+    initMatrix();
+
     clock_t begin = getClock();
     gauss();
     clock_t end = getClock();
     double time_elapse = clockToMs(end-begin);
 
-    printf("Matrix dimension[%d] threadnum[%d] cost [%lf]ms", dimension, threadnum, time_elapse);
+    printf("Matrix dimension[%d] threadnum[%d] cost [%lf]ms\n", dimension, threadnum, time_elapse);
     return 0;
 }
 
