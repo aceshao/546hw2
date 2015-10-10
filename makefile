@@ -3,14 +3,20 @@
 PTHREAD_TARGET=gauss_pthread
 PTHREAD_SRC = gauss_pthread.c
 
-REBUILDABLE = *.o $(PTHREAD_TARGET)
+TEST_TARGET=gauss_test
+TEST_SRC = gauss_test.c
+
+REBUILDABLE = *.o $(PTHREAD_TARGET) $(TEST_TARGET)
 
 CFLAGS := -g -Wall -DDEBUG -std=c99
 
-all:$(PTHREAD_TARGET)
+all:$(PTHREAD_TARGET) $(TEST_TARGET)
 
 clean:
 	rm -rf $(REBUILDABLE)
+
+$(TEST_TARGET):
+	gcc -o $(TEST_TARGET) $(TEST_SRC) $(CFLAGS)
 
 $(PTHREAD_TARGET):
 	gcc -o $(PTHREAD_TARGET) $(PTHREAD_SRC) $(CFLAGS) -lpthread 

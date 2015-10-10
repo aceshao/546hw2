@@ -43,6 +43,13 @@ int getRandNum(int maxnum)
     return rand()%maxnum+1;
 }
 
+clock_t getClock_unix()
+{
+    struct tms temp;
+    times(&temp);
+    return temp.tms_utime + temp.tms_stime;
+}
+
 clock_t getClock()
 {
     return clock();
@@ -181,11 +188,15 @@ int main(int argc, char* argv[])
     initMatrix();
 
     clock_t begin = getClock();
+    clock_t begin_unix = getClock_unix();
     gauss();
     clock_t end = getClock();
-    double time_elapse = clockToMs(end-begin);
+    clock_t end_unix = getClock_unix();
 
-    printf("Matrix dimension[%d] threadnum[%d] cost [%lf]ms\n", dimension, threadnum, time_elapse);
+    double time_elapse = clockToMs(end-begin);
+    double time_elapse_unix = clockToMs(end_unix - begin_unix);
+
+    printf("Matrix dimension[%d] threadnum[%d] cost [%lf]ms unixtime[%lf]\n", dimension, threadnum, time_elapse, time_elapse_unix);
     return 0;
 }
 
