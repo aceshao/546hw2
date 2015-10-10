@@ -18,6 +18,10 @@
 #include <math.h>
 #include <assert.h>
 #include <stdio.h>
+#include <sys/times.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <unistd.h>
 
 #define min(a, b) ((a)<(b)?(a):(b))
 
@@ -41,6 +45,15 @@ int getRandNum(int maxnum)
 {
     assert(maxnum > 0);
     return rand()%maxnum+1;
+}
+
+unsigned int getTime()
+{
+    struct timeval temp;
+    gettimeofday(&temp, NULL);
+    unsigned int now = temp.tv_sec*1000 + temp.tv_usec/1000;
+//    printf("gettimeofday[%ld]\n", now);
+    return now;
 }
 
 clock_t getClock_unix()
@@ -189,14 +202,16 @@ int main(int argc, char* argv[])
 
     clock_t begin = getClock();
     clock_t begin_unix = getClock_unix();
+    unsigned int begin_time = getTime();
     gauss();
     clock_t end = getClock();
     clock_t end_unix = getClock_unix();
+    unsigned int end_time = getTime();
 
     double time_elapse = clockToMs(end-begin);
     double time_elapse_unix = clockToMs(end_unix - begin_unix);
 
-    printf("Matrix dimension[%d] threadnum[%d] cost [%lf]ms unixtime[%lf]\n", dimension, threadnum, time_elapse, time_elapse_unix);
+    printf("Matrix dimension[%d] threadnum[%d] cost clocktime[%lf]ms gettimeofday[%ld]\n", dimension, threadnum, time_elapse, end_time-begin_time);
     return 0;
 }
 
