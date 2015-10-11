@@ -28,7 +28,6 @@
 // global variable
 const int MAX_MATRIX_VALUE = 1000;
 typedef double EleType;
-const char* filename = "gtest.dat";
 EleType** ppMartix = NULL;
 EleType* pVecB = NULL;
 EleType* pVecX = NULL;
@@ -128,7 +127,7 @@ void barrier()
 }
 
 // the parameter id should start from 0
-void* gauss_elimination_parallel_middleloop(void* id)
+void* gauss_elimination_pthread_middleloop(void* id)
 {
     for(int column = 0; column< dimension -1; column++)
     {
@@ -176,7 +175,7 @@ void gauss()
     pthread_t* ppt = calloc(threadnum, sizeof(pthread_t));
     assert(ppt != NULL);
     for(int i = 0; i < threadnum; i++)
-        pthread_create(&ppt[i], NULL, gauss_elimination_parallel_middleloop, &i);
+        pthread_create(&ppt[i], NULL, gauss_elimination_pthread_middleloop, &i);
 
     for(int i = 0; i < threadnum; i++)
         pthread_join(ppt[i], NULL);
@@ -211,7 +210,7 @@ int main(int argc, char* argv[])
     double time_elapse = clockToMs(end-begin);
     double time_elapse_unix = clockToMs(end_unix - begin_unix);
 
-    printf("Matrix dimension[%d] threadnum[%d] cost clocktime[%lf]ms gettimeofday[%ld]\n", dimension, threadnum, time_elapse, end_time-begin_time);
+    printf("Pthread Matrix dimension[%d] threadnum[%d] cost clocktime[%lf]ms gettimeofday[%ld]\n", dimension, threadnum, time_elapse, end_time-begin_time);
     return 0;
 }
 
