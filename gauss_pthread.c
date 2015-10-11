@@ -12,7 +12,7 @@
         We would try two data split method: one is for the middle loop and another one is the inner loop
         We also use conditional to synchorize threads
 */
-
+#define _POSIX_C_SOURCE 199309L
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
@@ -163,15 +163,17 @@ int main(int argc, char* argv[])
     clock_t begin = getClock();
     clock_t begin_unix = getClock_unix();
     unsigned int begin_time = getTime();
+    unsigned int clockgettime_b = clockGettime();
     gauss();
     clock_t end = getClock();
     clock_t end_unix = getClock_unix();
     unsigned int end_time = getTime();
+    unsigned int clockgettime_e = clockGettime();
 
     double time_elapse = clockToMs(end-begin);
     double time_elapse_unix = clockToMs(end_unix - begin_unix);
 
-    printf("Pthread Matrix dimension[%d] threadnum[%d] cost clocktime[%lf]ms gettimeofday[%u]ms\n", dimension, threadnum, time_elapse, end_time-begin_time);
+    printf("Pthread Matrix dimension[%d] threadnum[%d] cost clocktime[%lf]ms gettimeofday[%u]ms clockgettime[%u]ms\n", dimension, threadnum, time_elapse, end_time-begin_time, clockgettime_e - clockgettime_b);
     return 0;
 }
 

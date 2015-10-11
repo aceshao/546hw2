@@ -1,13 +1,13 @@
 #ifndef __COMMON__H
 #define __COMMON__H
-
+#define _POSIX_C_SOURCE 199309L
 #include <sys/times.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <unistd.h>
 #include <assert.h>
 #include <stdio.h>
-
+#include <time.h>
 
 void setRandSeed(unsigned int seed)
 {
@@ -25,7 +25,7 @@ unsigned int getTime()
     struct timeval temp;
     gettimeofday(&temp, NULL);
     unsigned int now = temp.tv_sec*1000 + temp.tv_usec/1000;
-//    printf("gettimeofday[%ld]\n", now);
+    printf("gettimeofday[%u]\n", now);
     return now;
 }
 
@@ -41,9 +41,19 @@ clock_t getClock()
     return clock();
 }
 
+unsigned int clockGettime()
+{
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    unsigned int now = ts.tv_sec*1000 + ts.tv_nsec/1000000;
+    printf("clockgettime[%u]\n", now);
+    return now;
+}
+
 // clock ticks to millisecond
 double clockToMs(unsigned int ticks)
 {
+    printf("clockpersec[%ld]\n", CLOCKS_PER_SEC);
     return (double)ticks*1000/(double)CLOCKS_PER_SEC;
 }
 

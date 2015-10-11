@@ -13,7 +13,7 @@
         and then do back substitution. The time complexity is O(n3)+O(n2) = O(n3).
 */
 
-
+#define _POSIX_C_SOURCE 199309L
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
