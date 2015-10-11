@@ -11,7 +11,7 @@ NORMAL_SRC = gauss_normal.c
 
 REBUILDABLE = *.o $(PTHREAD_TARGET) $(TEST_TARGET) $(NORMAL_TARGET)
 
-CFLAGS := -g -Wall -DDEBUG -std=c99
+CFLAGS := -g -Wall -DDEBUG -std=c99 -Wno-unused-variable
 
 all:$(PTHREAD_TARGET) $(TEST_TARGET) $(NORMAL_TARGET)
 
