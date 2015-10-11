@@ -1,0 +1,51 @@
+This analysis file will explain the correctness, performance and so no 
+
+Correctness:
+	we can put the gauss_pthread gauss_openmp in the TEST MODE, which will read the matrix from config file
+	and calculate the vector, Also the gauss_test is the sequential version of gauss_normal. All those test 
+	can be run correctly.
+
+Dependence analysis:
+	For the parallel part, we show that the gauss elimination takes O(n3) time complexity. The outer loop obviously
+	has data dependence. So we avoid parallel from the outer loop. We then try to parallel from the middle loop and inner loop.
+
+Synchronization:
+	For the pthread parallel part, we build the barrier to syn those threads to keep data independence. For the openmp
+	parallel part, the for loop parallel is builtin with the barrier
+
+Test method:
+	we would use rand number to build the required dimension matrix
+
+Test environment:
+	on jarvis machine
+
+Some differenct version and experiment result:
+Version 				dimension  	threadnum	runtime
+normal 		  			400       	   /		 110-130ms (it's not constant, but varies, same with below)
+pthread_middle_loop     400      	   1 		 110-130ms
+pthread_middle_loop		400		   	   4		 45-100ms 
+ptherad_inner_loop      400        	   4		 3000ms
+openmp_middle_loop      400            4         36-42ms (with static schedule is the fast way)
+openmp_inner_loop       400            4         190-200ms
+
+normal 					1000 		   / 		 1700ms (approximately, same with below)
+pthread_middle_loop     1000 		   4 		 500ms
+ptherad_inner_loop      1000           4     	 18300ms
+openmp_middle_loop      1000           4         460ms
+openmp_inner_loop       1000           4         1500ms
+pthread_middle_loop     1000           8		 320ms
+openmp_middle_loop      1000           8         300ms
+pthread_middle_loop     1000           20        1100ms
+openmp_middle_loop      1000           20        1200ms
+
+Conclusion from those experiment:
+1. Now the middle loop parallel is relatively efficient
+2. The speedup would be increase as threadnum increast at first, but then it decreases since the overhead of synchronziation would be dominant.
+3. The efficiency: at some point like threadnum = 4, it would be closer to threadnum as 4
+4. openmp overall is more efficient than pthread
+5. Based on varity of dimension test, the algorithm is scalable.
+6. Both inner loop version is less efficient than normal sequential version since the synchronziation overhead.
+
+
+
+

@@ -1,0 +1,30 @@
+This readme show how to compile and use the program
+
+How to compiler:
+	make clean;make  (here recommand clean first since openmp link library must compile with source file, so change the souce file may not rebuild if direct make.)
+How to clean:
+	make clean
+
+How to run those programs:
+Once make, there are four programs you can execute:
+	gauss_test			--> This is a test program for verifying the correctness of gauss elimination algorithm 
+	gauss_normal		--> This is the normal sequential algorithm of gauss elimination
+	gauss_pthread		--> This is the pthread parallel algorithm of gauss elimination
+	gauss_openmp		--> This is the openmp parallel algorithm of gauss elimination
+How to run:
+	./gauss_test        --> It will generate the correct answer for Ax = b, where A and b are specified in the config 							file named gtest.dat
+	./gauss_normal 400  --> One parameter to indicate the dimension of the matrix; It will output the time used;
+	./gauss_pthread 400 4 1(optional)
+		First parameter: dimension of the matrix
+		Second parameter: thread num
+		Third parameter(optional): indicate to parallel in the inner loop; default is the middle loop for gauss.
+		It will output the time used.
+	./gauss_openmp 400 4 1(optional)
+		First parameter: dimension of the matrix
+		Second parameter: thread num
+		Third parameter(optional): indicate to parallel in the inner loop; default is the middle loop for gauss.
+		It will output the time used.
+
+Analysis infomation please read the ANALYSIS file
+
+Homework directory on jarvis is: /home/aceshao/cs546/hw2

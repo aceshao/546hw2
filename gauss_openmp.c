@@ -18,6 +18,7 @@
 #include <math.h>
 #include <assert.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "common.h"
 
@@ -29,7 +30,48 @@ EleType* pVecB = NULL;
 EleType* pVecX = NULL;
 int dimension = 0;  // matrix dimension
 int threadnum = 10;  // parallel thread num
+bool InnerLoop = 0; // flag to indicate use the innerloop parallel
 
+bool TEST_MODE = 0;
+
+
+const char* filename = "gtest.dat";
+
+// from a config file we read in the matrix A
+// also the b which is the result vector
+// and initialize the x which is the solution vector
+// thus we wanna the solution A*x = b
+int readMatrix(const char* filename)
+{
+    FILE * fid = fopen(filename, "r");
+    assert(fid != NULL);
+
+    dimension = 0;
+    fscanf(fid, "%d", &dimension);
+    assert(dimension > 0);
+
+    ppMartix = (EleType**)calloc(dimension, sizeof(EleType*));
+    assert(ppMartix != NULL);
+    for(int i = 0; i < dimension; i++)
+    {
+        ppMartix[i] = (EleType*)calloc(dimension, sizeof(EleType));
+        assert(ppMartix[i] != NULL);
+    }
+
+    for(int i = 0; i < dimension; i++)
+        for(int j = 0; j < dimension; j++)
+            fscanf(fid, "%lf", &ppMartix[i][j]);
+
+    pVecB = (EleType*)calloc(dimension, sizeof(EleType));
+    assert(pVecB != NULL);
+    for(int i = 0; i < dimension; i++)
+        fscanf(fid, "%lf", &pVecB[i]);
+
+    pVecX = (EleType*)calloc(dimension, sizeof(EleType));
+    assert(pVecX != NULL);
+
+    return 0;
+}
 
 // use rand number to initilize the matrix and vector
 void initMatrix()
@@ -61,14 +103,37 @@ void initMatrix()
 // the parameter id should start from 0
 void* gauss_elimination_openmp_middleloop()
 {
-    for(int column = 0; column< dimension -1; column++)
+    for(int column = 0; column < dimension -1; column++)
     {
         EleType fac = 0;
         #pragma omp parallel num_threads(threadnum) shared (ppMartix, pVecB)
-        #pragma omp for schedule(guided) private (fac)
+        #pragma omp for schedule(static) private (fac)
         for(int row = column + 1; row < dimension; row++)
         {
             fac = ppMartix[row][column] / ppMartix[column][column];
+            for(int index = column; index < dimension; index++)
+            {
+                ppMartix[row][index] -= fac*ppMartix[column][index];
+            }
+            pVecB[row] -= fac*pVecB[column];
+        }
+    }
+
+    return 0;
+}
+
+// the parameter id should start from 0
+void* gauss_elimination_openmp_innerloop()
+{
+    for(int column = 0; column < dimension -1; column++)
+    {
+        EleType fac = 0;
+        for(int row = column + 1; row < dimension; row++)
+        {
+            fac = ppMartix[row][column] / ppMartix[column][column];
+
+            #pragma omp parallel num_threads(threadnum) shared (ppMartix, pVecB)
+            #pragma omp for schedule(static)
             for(int index = column; index < dimension; index++)
             {
                 ppMartix[row][index] -= fac*ppMartix[column][index];
@@ -96,7 +161,10 @@ void gauss_back_substitution()
 
 void gauss()
 {
-    gauss_elimination_openmp_middleloop();
+    if(InnerLoop)
+        gauss_elimination_openmp_innerloop();
+    else
+        gauss_elimination_openmp_middleloop();
     gauss_back_substitution();
 }
 
@@ -105,16 +173,22 @@ void gauss()
 // second one is: threadnum
 void getInput(int argc, char** argv)
 {
-    assert(argc == 3);
+    assert(argc >= 3);
     dimension = atoi(argv[1]);
     threadnum = atoi(argv[2]);
+    if(argc == 4)
+        InnerLoop = 1;
 }
 
 int main(int argc, char* argv[])
 {
     getInput(argc, argv);
 
-    initMatrix();
+    TEST_MODE = 0;
+    if(TEST_MODE)
+        readMatrix(filename);
+    else
+        initMatrix();
 
     clock_t begin = getClock();
     clock_t begin_unix = getClock_unix();
@@ -128,8 +202,9 @@ int main(int argc, char* argv[])
 
     double time_elapse = clockToMs(end-begin);
     double time_elapse_unix = clockToMs(end_unix - begin_unix);
-
-    printf("Openmp Matrix dimension[%d] threadnum[%d] cost clocktime[%lf]ms gettimeofday[%u]ms clockgettime[%u]\n", dimension, threadnum, time_elapse, end_time-begin_time, clockgettime_e - clockgettime_b);
+    if(TEST_MODE)
+        printVector(pVecX, dimension);
+    printf("Openmp Matrix dimension[%d] threadnum[%d] gettimeofday[%u]ms clockgettime[%u]\n", dimension, threadnum, end_time-begin_time, clockgettime_e - clockgettime_b);
     return 0;
 }
 

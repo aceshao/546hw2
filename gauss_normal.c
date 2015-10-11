@@ -100,9 +100,9 @@ void gauss()
 // second one is: threadnum
 void getInput(int argc, char** argv)
 {
-    assert(argc == 3);
+    assert(argc == 2);
     dimension = atoi(argv[1]);
-    threadnum = atoi(argv[2]);
+    //threadnum = atoi(argv[2]);
 }
 
 int main(int argc, char* argv[])
@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
     double time_elapse = clockToMs(end-begin);
     double time_elapse_unix = clockToMs(end_unix - begin_unix);
 
-    printf("Sequenal Matrix dimension[%d] threadnum[%d] cost clocktime[%lf]ms gettimeofday[%u]ms clockgettime[%u]ms\n", dimension, threadnum, time_elapse, end_time-begin_time, clockgettime_e - clockgettime_b);
+    printf("Sequenal Matrix dimension[%d] gettimeofday[%u]ms clockgettime[%u]ms\n", dimension, end_time-begin_time, clockgettime_e - clockgettime_b);
     return 0;
 }
 

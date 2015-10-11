@@ -25,7 +25,7 @@ unsigned int getTime()
     struct timeval temp;
     gettimeofday(&temp, NULL);
     unsigned int now = temp.tv_sec*1000 + temp.tv_usec/1000;
-    printf("gettimeofday[%u]\n", now);
+    //printf("gettimeofday[%u]\n", now);
     return now;
 }
 
@@ -44,9 +44,9 @@ clock_t getClock()
 unsigned int clockGettime()
 {
     struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    clock_gettime(CLOCK_MONOTONIC, &ts);
     unsigned int now = ts.tv_sec*1000 + ts.tv_nsec/1000000;
-    printf("clockgettime[%u]\n", now);
+    //printf("clockgettime[%u]\n", now);
     return now;
 }
 
