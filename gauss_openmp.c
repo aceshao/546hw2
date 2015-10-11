@@ -12,6 +12,7 @@
         We would try two data split method: one is for the middle loop and another one is the inner loop
 */
 
+#define _POSIX_C_SOURCE 199309L
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
@@ -62,11 +63,12 @@ void* gauss_elimination_openmp_middleloop()
 {
     for(int column = 0; column< dimension -1; column++)
     {
+        EleType fac = 0;
         #pragma omp parallel num_threads(threadnum) shared (ppMartix, pVecB)
         #pragma omp for schedule(guided) private (fac)
         for(int row = column + 1; row < dimension; row++)
         {
-            EleType fac = ppMartix[row][column] / ppMartix[column][column];
+            fac = ppMartix[row][column] / ppMartix[column][column];
             for(int index = column; index < dimension; index++)
             {
                 ppMartix[row][index] -= fac*ppMartix[column][index];
@@ -117,15 +119,17 @@ int main(int argc, char* argv[])
     clock_t begin = getClock();
     clock_t begin_unix = getClock_unix();
     unsigned int begin_time = getTime();
+    unsigned int clockgettime_b = clockGettime();
     gauss();
     clock_t end = getClock();
     clock_t end_unix = getClock_unix();
     unsigned int end_time = getTime();
+    unsigned int clockgettime_e = clockGettime();
 
     double time_elapse = clockToMs(end-begin);
     double time_elapse_unix = clockToMs(end_unix - begin_unix);
 
-    printf("Openmp Matrix dimension[%d] threadnum[%d] cost clocktime[%lf]ms gettimeofday[%u]ms\n", dimension, threadnum, time_elapse, end_time-begin_time);
+    printf("Openmp Matrix dimension[%d] threadnum[%d] cost clocktime[%lf]ms gettimeofday[%u]ms clockgettime[%u]\n", dimension, threadnum, time_elapse, end_time-begin_time, clockgettime_e - clockgettime_b);
     return 0;
 }
 

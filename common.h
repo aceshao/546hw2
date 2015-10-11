@@ -53,7 +53,7 @@ unsigned int clockGettime()
 // clock ticks to millisecond
 double clockToMs(unsigned int ticks)
 {
-    printf("clockpersec[%ld]\n", CLOCKS_PER_SEC);
+    //printf("clockpersec[%ld]\n", CLOCKS_PER_SEC);
     return (double)ticks*1000/(double)CLOCKS_PER_SEC;
 }
 
