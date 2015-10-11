@@ -93,7 +93,8 @@ void* gauss_elimination_pthread_middleloop(void* id)
     for(int column = 0; column< dimension -1; column++)
     {
         // here we parallel the loop based on the tid
-        int tid = *(int*)id;
+        int tid = *(int*)(&id);
+	printf("tid:%d\n", tid);
         int totalRow = dimension - column - 1;
         int from = totalRow*tid/threadnum + column + 1;
         int to = (int)min(totalRow*(tid+1)/threadnum, dimension);
@@ -136,7 +137,7 @@ void gauss()
     pthread_t* ppt = calloc(threadnum, sizeof(pthread_t));
     assert(ppt != NULL);
     for(int i = 0; i < threadnum; i++)
-        pthread_create(&ppt[i], NULL, gauss_elimination_pthread_middleloop, &i);
+        pthread_create(&ppt[i], NULL, gauss_elimination_pthread_middleloop, (void*)i);
 
     for(int i = 0; i < threadnum; i++)
         pthread_join(ppt[i], NULL);
