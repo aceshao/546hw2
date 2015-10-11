@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
+#include "common.h"
 
 void PRINTF(const char* content)
 {
@@ -65,30 +66,6 @@ int readMatrix(const char* filename)
     assert(pVecX != NULL);
 
     return 0;
-}
-
-void printMartix(EleType** ppMartix, int dimension)
-{
-    printf("\nNow the Martix is:\n");
-    for(int i = 0; i < dimension; i++)
-    {
-        for(int j = 0; j < dimension; j++)
-        {
-            printf("%lf ", ppMartix[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-
-void printVector(EleType * vector, int dimension)
-{
-    printf("\nNow the vector is:\n");
-    for(int i = 0; i < dimension; i++)
-    {
-        printf("%lf ", vector[i]);
-    }
-    printf("\n");
 }
 
 // given the matrix, the vector b and dimension, we calculate the vector x and store it in the pvecx

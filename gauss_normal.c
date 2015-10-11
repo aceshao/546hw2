@@ -17,11 +17,7 @@
 #include <math.h>
 #include <assert.h>
 #include <stdio.h>
-#include <sys/times.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <unistd.h>
-
+#include "common.h"
 
 // global variable
 const int MAX_MATRIX_VALUE = 1000;
@@ -31,46 +27,6 @@ EleType* pVecB = NULL;
 EleType* pVecX = NULL;
 int dimension = 0;  // matrix dimension
 int threadnum = 10;  // parallel thread num
-
-
-void setRandSeed(unsigned int seed)
-{
-    srand(seed);
-}            
-
-int getRandNum(int maxnum)
-{
-    assert(maxnum > 0);
-    return rand()%maxnum+1;
-}
-
-unsigned int getTime()
-{
-    struct timeval temp;
-    gettimeofday(&temp, NULL);
-    unsigned int now = temp.tv_sec*1000 + temp.tv_usec/1000;
-//    printf("gettimeofday[%ld]\n", now);
-    return now;
-}
-
-clock_t getClock_unix()
-{
-    struct tms temp;
-    times(&temp);
-    return temp.tms_utime + temp.tms_stime;
-}
-
-clock_t getClock()
-{
-    return clock();
-}
-
-// clock ticks to millisecond
-double clockToMs(unsigned int ticks)
-{
-    return (double)ticks*1000/(double)CLOCKS_PER_SEC;
-}
-
 
 // use rand number to initilize the matrix and vector
 void initMatrix()
