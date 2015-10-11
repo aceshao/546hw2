@@ -166,7 +166,7 @@ int main(int argc, char* argv[])
     double time_elapse = clockToMs(end-begin);
     double time_elapse_unix = clockToMs(end_unix - begin_unix);
 
-    printf("Sequenal Matrix dimension[%d] threadnum[%d] cost clocktime[%lf]ms gettimeofday[%ld]\n", dimension, threadnum, time_elapse, end_time-begin_time);
+    printf("Sequenal Matrix dimension[%d] threadnum[%d] cost clocktime[%lf]ms gettimeofday[%u]ms\n", dimension, threadnum, time_elapse, end_time-begin_time);
     return 0;
 }
 
